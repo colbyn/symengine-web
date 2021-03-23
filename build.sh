@@ -4,9 +4,10 @@ rm -f main.wasm
 mkdir -p release/desktop
 mkdir -p release/browser
 
-FLAGS="-I./dependencies/include -l symengine -l gmp -L./dependencies/lib -Wl,--stack-first"
-DESKTOP_FLAGS="-s WASM=1 -s EXPORTED_FUNCTIONS=['_run']"
+FLAGS="-I./dependencies/wasm/include -l symengine -l gmp -L./dependencies/wasm/lib -Wl,--stack-first"
+DESKTOP_FLAGS=""
 BROWSER_FLAGS="--shell-file ./assets/index.html"
+DEBUG_FLAGS="-s ASSERTIONS=1 -s SAFE_HEAP=1 -s SAFE_HEAP_LOG=1 -s DEMANGLE_SUPPORT=1"
 
 if [[ -n "$1" ]] && [[ "${1#*.}" == "desktop" ]]; then
     emcc main.c -o ./release/desktop/main.wasm $FLAGS $DESKTOP_FLAGS
