@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "cwrapper.h": "c",
+        "emscripten.h": "c"
+    }
+}
