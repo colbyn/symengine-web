@@ -1,46 +1,59 @@
+#!/bin/zsh
 set -e
 
-wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
+cd build || {mkdir build && cd build}
+
+into_source_dir() {
+    cd $1 || {git clone https://github.com/torquem-ch/gmp-wasm.git $1 && cd $1}
+}
 
 ###############################################################################
-# BUILD WASM
+# BUILD WASM (EMSCRIPTEN)
 ###############################################################################
 
-tar xf gmp-6.1.2.tar.lz
-mv gmp-6.1.2 gmp-wasm
-cd gmp-wasm
+into_source_dir gmp-emscripten-wasm
 mkdir -p target
-emconfigure ./configure --disable-assembly --host none --enable-cxx --prefix=$(pwd)/target 
+CFLAGS="-O0 -g" emconfigure ./configure --disable-assembly --host none --disable-cxx --enable-shared --prefix=$(pwd)/target CFLAGS="-O0 -g" 
 make
 make install
 cd ..
 
-mkdir -p dependencies/wasm/include
-mkdir -p dependencies/wasm/lib
-cp -r gmp-wasm/target/include/gmp.h dependencies/wasm/include/gmp.h
-cp -r gmp-wasm/target/lib/libgmp.a dependencies/wasm/lib/libgmp.a
+mkdir -p dependencies/emscripten-wasm
+rsync -av gmp-emscripten-wasm/target/* dependencies/emscripten-wasm
 
 ###############################################################################
-# BUILD X86
+# BUILD WASM32-WASI - VIA NATIVE CLANG
 ###############################################################################
 
-tar xf gmp-6.1.2.tar.lz
-mv gmp-6.1.2 gmp-x86
-cd gmp-x86
+into_source_dir gmp-wasm32-wasi
 mkdir -p target
-./configure --disable-assembly --host none --enable-cxx --prefix=$(pwd)/target 
+
+CFLAGS="--target=wasm32-wasi --sysroot=/Users/colbyn/Developer/wasi-sdk-12.0/share/wasi-sysroot" ./configure --prefix=$(pwd)/target CC=/Users/colbyn/Developer/wasi-sdk-12.0/bin/clang --host=none --disable-assembly --disable-cxx
 make
 make install
 cd ..
 
-mkdir -p dependencies/x86/include
-mkdir -p dependencies/x86/lib
-cp -r gmp-x86/target/include/gmp.h dependencies/x86/include/gmp.h
-cp -r gmp-x86/target/lib/libgmp.a dependencies/x86/lib/libgmp.a
+mkdir -p dependencies/wasm32-wasi
+rsync -av gmp-wasm32-wasi/target/* dependencies/wasm32-wasi
+
+
+###############################################################################
+# BUILD LEGACY X86
+###############################################################################
+
+into_source_dir gmp-x86-legacy
+mkdir -p target
+./configure --disable-assembly --host none --disable-cxx --prefix=$(pwd)/target 
+make
+make install
+cd ..
+
+mkdir -p dependencies/x86-legacy
+rsync -av gmp-x86-legacy/target/* dependencies/x86-legacy
 
 ###############################################################################
 # CLEANUP
 ###############################################################################
-rm -rf gmp-wasm
-rm -rf gmp-x86
-rm -rf gmp-6.1.2.tar.lz
+# rm -rf gmp-wasm
+# rm -rf gmp-x86
+# rm -rf gmp-6.1.2.tar.lz

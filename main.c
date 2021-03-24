@@ -41,6 +41,10 @@
 
 // STUB
 EMSCRIPTEN_KEEPALIVE int main(int argc, char *argv[]) {
+    char *str = "123";
+    basic_struct *p = basic_new_heap();
+    CWRAPPER_OUTPUT_TYPE error = basic_parse(p, str);
+
     int counter;
     printf("Program Name Is: %s\n",argv[0]);
     if(argc==1)
@@ -54,9 +58,10 @@ EMSCRIPTEN_KEEPALIVE int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-    char *str = "123 + 321";
-    basic p;
-    basic_new_stack(p);
-    basic_parse(p, str);
+    // char *str = "123";
+    // basic_struct *p = basic_new_heap();
+    // CWRAPPER_OUTPUT_TYPE error = basic_parse(p, str);
+    printf("DONE");
+
     return 0;
 }

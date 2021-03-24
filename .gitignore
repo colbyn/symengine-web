@@ -6,7 +6,10 @@ symengine
 .DS_Store
 dependencies
 release
-
+gmp-wasm
+gmp-wasm32-wasi
+gmp-x86-legacy
+build/
 
 # Added by cargo
 
