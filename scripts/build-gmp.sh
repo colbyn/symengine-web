@@ -28,7 +28,7 @@ rsync -av gmp-emscripten-wasm/target/* dependencies/emscripten-wasm
 into_source_dir gmp-wasm32-wasi
 mkdir -p target
 
-CFLAGS="--target=wasm32-wasi --sysroot=/Users/colbyn/Developer/wasi-sdk-12.0/share/wasi-sysroot" ./configure --prefix=$(pwd)/target CC=/Users/colbyn/Developer/wasi-sdk-12.0/bin/clang --host=none --disable-assembly --disable-cxx
+CFLAGS="--target=wasm32-wasi --sysroot=/Users/colbyn/Developer/wasi-sdk-12.0/share/wasi-sysroot -Wl,--no-entry -Wl,--export-all" ./configure --prefix=$(pwd)/target CC=/Users/colbyn/Developer/wasi-sdk-12.0/bin/clang --host=none --disable-assembly --disable-cxx
 make
 make install
 cd ..
@@ -43,7 +43,7 @@ rsync -av gmp-wasm32-wasi/target/* dependencies/wasm32-wasi
 
 into_source_dir gmp-x86-legacy
 mkdir -p target
-./configure --disable-assembly --host none --disable-cxx --prefix=$(pwd)/target 
+CC=/usr/local/opt/llvm/bin/clang CFLAGS="--target x86_64-apple-darwin20.3.0" ./configure --disable-assembly --host none --disable-cxx --prefix=$(pwd)/target 
 make
 make install
 cd ..

@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "cwrapper.h": "c",
-        "emscripten.h": "c"
+        "emscripten.h": "c",
+        "em_macros.h": "c",
+        "em_js.h": "c",
+        "*.h++": "cpp"
     }
 }
